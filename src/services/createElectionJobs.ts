@@ -105,6 +105,7 @@ export const initCreateElectionWorker = (app: Application): Worker => {
             ).participantList;
             const registerIdentities = await RegisterFabricCAServices(
               participantList,
+              job.data.createTempData?.electionId as string,
               job.data.uid as string
             );
 

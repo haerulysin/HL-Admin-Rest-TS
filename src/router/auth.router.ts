@@ -76,6 +76,34 @@ authRouter.post(
   }
 );
 
+authRouter.get(
+  "/ping",
+  passportAuthMiddleware,
+  async (req: Request, res: Response) => {
+    const ApiKey = req.user as string;
+    const contract: Contract = req.app.locals[ApiKey];
+    if (!contract) {
+      return res.status(400).json({
+        status: getReasonPhrase(400),
+        message: "X-API-KEY Not Available, Try login/enroll first.",
+      });
+    }
+    try {
+      await pingChaincode(contract);
+      return res.status(200).json({
+        status: getReasonPhrase(200),
+        api_keys: ApiKey,
+      });
+    } catch (e: any) {
+      return res.status(e.status).json({
+        status: getReasonPhrase(e.status),
+        reason: e.message,
+        timestamp: new Date().toISOString(),
+      });
+    }
+  }
+);
+
 authRouter.delete(
   "/",
   passportAuthMiddleware,

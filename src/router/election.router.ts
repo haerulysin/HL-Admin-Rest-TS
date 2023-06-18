@@ -2,12 +2,36 @@ import express, { Request, Response, Router } from "express";
 import { body, validationResult } from "express-validator";
 import { getReasonPhrase } from "http-status-codes";
 import { Queue } from "bullmq";
-import { CreateElectionStep, electionReqBodyDataType } from "../utils/types.js";
+import {
+  ContractList,
+  CreateElectionStep,
+  electionReqBodyDataType,
+} from "../utils/types.js";
 import { getJobSummary } from "../jobs.js";
 import { createNewElectionTransactionJob } from "../services/createElectionJobs.js";
+import { Contract } from "fabric-network";
+import { evaluateTransaction } from "../fabric.js";
 
 export const ElectionRouter: Router = express.Router();
 
+ElectionRouter.get("/", async (req: Request, res: Response) => {
+  try {
+    const contract = (req.app.locals[req.user as string] as ContractList)
+      .assetContract as Contract;
+    const data = await evaluateTransaction(contract, "GetElectionList");
+    let assets = [];
+    if (data.length > 0) {
+      assets = JSON.parse(data.toString());
+    }
+    return res.status(200).json(assets);
+  } catch (e: any) {
+    return res.status(e.status).json({
+      status: getReasonPhrase(e.status),
+      reason: e.message,
+      timestamp: new Date().toISOString(),
+    });
+  }
+});
 ElectionRouter.post(
   "/create",
   body("electionName").notEmpty(),
@@ -52,26 +76,24 @@ ElectionRouter.get("/jobs/:jobsid", async (req, res) => {
   try {
     const jq: Queue = req.app.locals.cjobq;
     const jobd = await jq.getJob(req.params.jobsid);
-    const percentProgress = (jobd?.data.step/CreateElectionStep.Finish) * 100;
+    const percentProgress = (jobd?.data.step / CreateElectionStep.Finish) * 100;
     let status = 201;
-    if(jobd?.data.step === CreateElectionStep.Finish){
+    if (jobd?.data.step === CreateElectionStep.Finish) {
       status = 200;
     }
     return res.status(status).json({
-      status:getReasonPhrase(status),
-      progress: percentProgress
+      status: getReasonPhrase(status),
+      progress: percentProgress,
     });
   } catch (err) {
     return res.status(500).json({
-      status:getReasonPhrase(500),
-    })
+      status: getReasonPhrase(500),
+    });
   }
 });
 
-
-ElectionRouter.get("/jj/:jid", async(req,res) => {
-
-  const jj:Queue = req.app.locals.jobq;
+ElectionRouter.get("/jj/:jid", async (req, res) => {
+  const jj: Queue = req.app.locals.jobq;
   const sm = await getJobSummary(jj, req.params.jid);
   res.send(JSON.stringify(sm));
-})
+});

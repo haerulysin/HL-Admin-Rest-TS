@@ -3,7 +3,7 @@ import createServer from "./server.js";
 import dotenv from "dotenv";
 import { createWallet, createGateway, getNetwork, GetContract, pingChaincode } from "./fabric.js";
 import { initJobQueue, initJobWorker } from "./jobs.js";
-import { JobResult } from "./utils/types.js";
+import { ContractList, JobResult } from "./utils/types.js";
 import { initCreateElectionJobs, initCreateElectionWorker } from "./services/createElectionJobs.js";
 
 let jobQueue: Queue | undefined;
@@ -22,16 +22,13 @@ async function main() {
   const gw = await createGateway(wallet, uid);
   const nw = await getNetwork(gw);
   const cc = await GetContract(nw);
-  app.locals[uid] = cc.assetContract;
+  app.locals[uid] = cc as ContractList;
   jobQueue = initJobQueue();
   jobQueueWorker = initJobWorker(app);
   app.locals.jobq = jobQueue;
-
   createElectionJobQueue = initCreateElectionJobs();
   createElectionJobQueueWorker = initCreateElectionWorker(app);
-  
   app.locals.cjobq = createElectionJobQueue;
-
   let rep = await createElectionJobQueue.getRepeatableJobs();
   rep.forEach(async job=>{
     await createElectionJobQueue?.removeRepeatableByKey(job.key)

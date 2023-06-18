@@ -2,6 +2,7 @@ import { Queue, ConnectionOptions, Worker, Job } from "bullmq";
 import * as config from "../utils/config.js";
 import {
   Candidates,
+  ContractList,
   Election,
   HLDocType,
   Participant,
@@ -30,7 +31,8 @@ export const CreateElectionServices = async (
   // const submitQueue = app.locals.jobq as Queue;
   // const jobid = await addSubmitTransactionJob(submitQueue, uid, 'CreateElection', JSON.stringify(election));
   try {
-    const contract = app.locals[uid] as Contract;
+    const contract = (app.locals[uid] as ContractList)
+      .assetContract as Contract;
     const resp = await contract.submitTransaction(
       "CreateElection",
       JSON.stringify(election)
@@ -55,7 +57,7 @@ export const CreateCandidatesServices = async (
       docType: HLDocType.Candidates,
     });
   });
-  const contract = app.locals[uid] as Contract;
+  const contract = (app.locals[uid] as ContractList).assetContract as Contract;
   const resp = await contract.submitTransaction(
     "CreateCandidates",
     JSON.stringify(candidateList),
@@ -74,7 +76,8 @@ export const CreateBallotServices = async (
   // console.log(participantData)
 
   try {
-    const contract = app.locals[uid] as Contract;
+    const contract = (app.locals[uid] as ContractList)
+      .assetContract as Contract;
     const participantList: string[] = [];
 
     participantData.forEach(async (value) => {
@@ -98,6 +101,7 @@ export const CreateBallotServices = async (
 
 export const RegisterFabricCAServices = async (
   participantData: Participant[],
+  electionID: string,
   uid: string
 ): Promise<string[]> => {
   let participantHashList: string[] = [];
@@ -107,7 +111,7 @@ export const RegisterFabricCAServices = async (
     const participantHash = createHash("sha256")
       .update(JSON.stringify(data))
       .digest("hex");
-    const x = await registerUser(participantHash, uid);
+    const x = await registerUser(participantHash, electionID, uid);
     participantHashList.push(participantHash);
   });
   return participantHashList;

@@ -1,7 +1,7 @@
 import { ConnectionOptions, Queue, Job, Worker } from "bullmq";
 import * as config from "./utils/config.js";
 import { Application } from "express";
-import { JobData, JobResult, JobSummary } from "./utils/types.js";
+import { ContractList, JobData, JobResult, JobSummary } from "./utils/types.js";
 import { Contract, Transaction } from "fabric-network";
 import { submitTransaction } from "./fabric.js";
 import {
@@ -70,7 +70,8 @@ export const processSubmitTransactionJob = async (
   app: Application,
   job: Job<JobData, JobResult>
 ): Promise<JobResult> => {
-  const contract = app.locals[job.data.uid] as Contract;
+  const contract = (app.locals[job.data.uid] as ContractList)
+    .assetContract as Contract;
 
   if (contract === undefined)
     return { txError: undefined, txPayload: undefined };

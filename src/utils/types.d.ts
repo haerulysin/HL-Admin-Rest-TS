@@ -1,3 +1,5 @@
+import { Contract } from "fabric-network";
+
 export type Election = {
   electionID?: string;
   electionName: string;
@@ -110,4 +112,9 @@ export type CCResponse = {
   status?:number;
   message?:string;
   error?:striing;
+}
+
+export type ContractList = {
+  qsccContract:Contract;
+  assetContract:Contract;
 }

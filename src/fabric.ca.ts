@@ -1,5 +1,5 @@
 import { handleError, handleFabricCAError } from "./utils/errors.js";
-import FabricCAServices from "fabric-ca-client";
+import FabricCAServices, { IKeyValueAttribute } from "fabric-ca-client";
 import FabricCAClient from "fabric-ca-client";
 import ccpFile from "./connection/ccp.json" assert { type: "json" };
 import { Identity, IdentityProvider, Wallet, Wallets } from "fabric-network";
@@ -29,12 +29,17 @@ export async function enrollUser(userID: string): Promise<object> {
 
 export async function registerUser(
   userHash: string,
+  electionID:string,
   uid: string
 ): Promise<string> {
   const caClient = caConnect();
   const [provider, wallet] = await _getProvider(uid);
 
   try {
+    const x: IKeyValueAttribute = {
+      name: "A",
+      value: "B",
+    };
     const registrarCtx = await provider.getUserContext(wallet, uid);
     const register = await caClient.register(
       {
@@ -42,6 +47,12 @@ export async function registerUser(
         enrollmentSecret: userHash,
         role: "client",
         affiliation: "",
+        attrs: [
+          {
+            name: "ElectionID",
+            value: electionID,
+          },
+        ],
         maxEnrollments: -1,
       },
       registrarCtx
