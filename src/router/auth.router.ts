@@ -13,6 +13,7 @@ import {
   pingChaincode,
 } from "../fabric.js";
 import { passportAuthMiddleware } from "../auth.js";
+import { ContractList } from "../utils/types.js";
 
 export const authRouter = express.Router();
 
@@ -81,7 +82,7 @@ authRouter.get(
   passportAuthMiddleware,
   async (req: Request, res: Response) => {
     const ApiKey = req.user as string;
-    const contract: Contract = req.app.locals[ApiKey];
+    const contract: Contract = (req.app.locals[ApiKey] as ContractList).assetContract;
     if (!contract) {
       return res.status(400).json({
         status: getReasonPhrase(400),
@@ -95,9 +96,9 @@ authRouter.get(
         api_keys: ApiKey,
       });
     } catch (e: any) {
-      return res.status(e.status).json({
-        status: getReasonPhrase(e.status),
-        reason: e.message,
+      console.log(e);
+      return res.status(500).json({
+        status: getReasonPhrase(500),
         timestamp: new Date().toISOString(),
       });
     }

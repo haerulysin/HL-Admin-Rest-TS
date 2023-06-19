@@ -54,17 +54,16 @@ ElectionRouter.post(
       Buffer.byteLength(JSON.stringify(bodyData)) /
       (1024 * 1024)
     ).toFixed(2);
-
     try {
       const jqueue = req.app.locals.cjobq as Queue;
       const uid = req.user as string;
-      const jobid = await createNewElectionTransactionJob(
-        jqueue,
-        bodyData,
-        uid
-      );
+      // const jobid = await createNewElectionTransactionJob(
+      //   jqueue,
+      //   bodyData,
+      //   uid
+      // );
       return res.status(200).json({
-        job: jobid,
+        jobId: 110,
       });
     } catch (err) {
       console.log(err);
