@@ -40,7 +40,7 @@ export const enum HLDocType {
   Election = "Election",
   Participant = "Participant",
   Ballot = "Ballot",
-  Candidates = "Candidates",
+  Candidates = "Candidate",
 }
 
 export type JobData = {

@@ -32,6 +32,30 @@ ElectionRouter.get("/", async (req: Request, res: Response) => {
     });
   }
 });
+
+ElectionRouter.get("/:id", async (req: Request, res: Response) => {
+  const { id } = req.params;
+  try {
+    const contract = (req.app.locals[req.user as string] as ContractList)
+      .assetContract;
+    const electionData = await evaluateTransaction(
+      contract,
+      "GetElectionData",
+      id
+    );
+
+    return res
+      .status(200)
+      .json(JSON.parse(Buffer.from(electionData as Buffer).toString()));
+  } catch (e: any) {
+    return res.status(e.status).json({
+      status: getReasonPhrase(e.status),
+      reason: e.message,
+      timestamp: new Date().toISOString(),
+    });
+  }
+});
+
 ElectionRouter.post(
   "/create",
   body("electionName").notEmpty(),
@@ -57,16 +81,19 @@ ElectionRouter.post(
     try {
       const jqueue = req.app.locals.cjobq as Queue;
       const uid = req.user as string;
-      // const jobid = await createNewElectionTransactionJob(
-      //   jqueue,
-      //   bodyData,
-      //   uid
-      // );
+      const jobid = await createNewElectionTransactionJob(
+        jqueue,
+        bodyData,
+        uid
+      );
       return res.status(200).json({
-        jobId: 110,
+        jobId: 113,
       });
     } catch (err) {
-      console.log(err);
+      return res.status(500).json({
+        status: getReasonPhrase(500),
+        timestamp: new Date().toISOString(),
+      });
     }
   }
 );
