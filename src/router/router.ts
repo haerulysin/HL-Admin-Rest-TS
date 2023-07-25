@@ -4,6 +4,8 @@ import { Contract } from "fabric-network";
 import { AssetRouter } from "./asset.router.js";
 import { fabricAPIKeyStrategy, passportAuthMiddleware } from "../auth.js";
 import { ElectionRouter } from "./election.router.js";
+import { getAllIdentities } from "../fabric.ca.js";
+import { UtilityRouter } from "./utility.router.js";
 
 export const router = express.Router();
 
@@ -11,6 +13,7 @@ const routeList = [
   { path: "/auth", route: authRouter },
   { path: "/asset", route: AssetRouter },
   { path: "/election", route: ElectionRouter },
+  { path: "/", route: UtilityRouter }
 ];
 
 for (let r of routeList) {

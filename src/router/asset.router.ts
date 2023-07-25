@@ -13,7 +13,7 @@ export const AssetRouter = express.Router();
 
 AssetRouter.get("/", async (req: Request, res: Response) => {
   try {
-    const contract = req.app.locals[req.user as string];
+    const contract = (req.app.locals[req.user as string] as ContractList).assetContract;
     const buffer = await evaluateTransaction(contract, "GetAllAsset");
     const data: any[] = JSON.parse(buffer.toString());
     return res.status(200).json(data);

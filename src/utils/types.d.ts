@@ -1,4 +1,5 @@
 import { Contract } from "fabric-network";
+declare module 'asn1.js';
 
 export type Election = {
   electionID?: string;
@@ -28,11 +29,11 @@ export type Ballot = {
   docType: string;
 };
 
-export type Candidates = {
-  candidatesID?: string;
-  candidatesName: string;
-  candidatesDescription: string;
-  candidatesPhotoURL?: string;
+export type Candidate = {
+  candidateID?: string;
+  candidateName: string;
+  candidateDescription: string;
+  candidatePhotoURL?: string;
   docType: string;
 };
 

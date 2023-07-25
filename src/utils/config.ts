@@ -5,7 +5,11 @@ dotenv.config();
 export const ORG: string = env.get("ORG_NAME").default("SampleOrg").asString();
 export const MSPID: string = env.get("MSP_ID").default("SampleOrg").asString();
 export const JOB_QUEUE_NAME = "submitContract";
-export const CREATE_ELECTION_QUEUE_NAME='CreateElection';
+export const CREATE_ELECTION_QUEUE_NAME = 'CreateElection';
+
+
+export const ADMIN_CB64 = env.get("CERTB64").default("").asString();
+export const ADMIN_PB64 = env.get("PRIVKEYB64").default("").asString();
 
 export const port = env
   .get("PORT")

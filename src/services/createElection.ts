@@ -1,7 +1,7 @@
 import { Queue, ConnectionOptions, Worker, Job } from "bullmq";
 import * as config from "../utils/config.js";
 import {
-  Candidates,
+  Candidate,
   ContractList,
   Election,
   HLDocType,
@@ -46,11 +46,11 @@ export const CreateElectionServices = async (
 
 export const CreateCandidatesServices = async (
   app: Application,
-  candidatesData: Candidates[],
+  candidatesData: Candidate[],
   electionId: string,
   uid: string
 ): Promise<string> => {
-  let candidateList: Candidates[] = [];
+  let candidateList: Candidate[] = [];
   candidatesData.forEach((data) => {
     candidateList.push({
       ...data,
@@ -59,7 +59,7 @@ export const CreateCandidatesServices = async (
   });
   const contract = (app.locals[uid] as ContractList).assetContract as Contract;
   const resp = await contract.submitTransaction(
-    "CreateCandidates",
+    "CreateCandidate",
     JSON.stringify(candidateList),
     electionId
   );
@@ -73,8 +73,6 @@ export const CreateBallotServices = async (
   electionId: string,
   uid: string
 ): Promise<string> => {
-  // console.log(participantData)
-
   try {
     const contract = (app.locals[uid] as ContractList)
       .assetContract as Contract;

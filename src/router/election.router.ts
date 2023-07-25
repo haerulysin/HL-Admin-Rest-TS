@@ -87,7 +87,7 @@ ElectionRouter.post(
         uid
       );
       return res.status(200).json({
-        jobId: 113,
+        jobId: jobid,
       });
     } catch (err) {
       return res.status(500).json({
@@ -116,10 +116,4 @@ ElectionRouter.get("/jobs/:jobsid", async (req, res) => {
       status: getReasonPhrase(500),
     });
   }
-});
-
-ElectionRouter.get("/jj/:jid", async (req, res) => {
-  const jj: Queue = req.app.locals.jobq;
-  const sm = await getJobSummary(jj, req.params.jid);
-  res.send(JSON.stringify(sm));
 });

@@ -9,7 +9,7 @@ import {
   Network,
   Transaction,
 } from "fabric-network";
-import * as protos from "fabric-protos";
+import * as fproto from "fabric-protos";
 import { createHash } from "crypto";
 import { handleError } from "./utils/errors.js";
 import * as config from "./utils/config.js";
@@ -115,8 +115,8 @@ export const getTransactionValidationCode = async (
     txid
   );
 
-  const processedTx = protos.protos.ProcessedTransaction.decode(data);
-  return protos.protos.TxValidationCode[processedTx.validationCode];
+  const processedTx = fproto.protos.ProcessedTransaction.decode(data);
+  return fproto.protos.TxValidationCode[processedTx.validationCode];
 };
 
 export const getBlockHeight = async (
@@ -126,7 +126,7 @@ export const getBlockHeight = async (
     "GetChainInfo",
     config.chaincodeName
   );
-  const info = protos.common.BlockchainInfo.decode(data);
+  const info = fproto.common.BlockchainInfo.decode(data);
   return info.height;
 };
 
@@ -141,3 +141,5 @@ export const pingChaincode = async (contract: Contract): Promise<boolean> => {
     throw handleError("PING", e);
   }
 };
+
+

@@ -139,8 +139,6 @@ export const initCreateElectionWorker = (app: Application): Worker => {
               step: CreateElectionStep.Finish,
               currentStatus,
             });
-
-            console.log(job.data);
             step = CreateElectionStep.Finish;
             return step;
           }

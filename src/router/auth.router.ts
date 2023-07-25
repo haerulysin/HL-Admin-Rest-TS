@@ -1,6 +1,6 @@
 import express, { Request, Response } from "express";
 import { getReasonPhrase } from "http-status-codes";
-import { enrollUser, registerUser, deleteUser } from "../fabric.ca.js";
+import { enrollUser, registerUser } from "../fabric.ca.js";
 import { X509Certificate, createHash, createPrivateKey } from "crypto";
 import { body, validationResult } from "express-validator";
 import { Contract } from "fabric-network";
@@ -96,41 +96,10 @@ authRouter.get(
         api_keys: ApiKey,
       });
     } catch (e: any) {
-      console.log(e);
       return res.status(500).json({
         status: getReasonPhrase(500),
         timestamp: new Date().toISOString(),
       });
     }
-  }
-);
-
-authRouter.delete(
-  "/",
-  passportAuthMiddleware,
-  async (req: Request, res: Response) => {
-    const { userList } = req.body;
-
-    type delMsg = {
-      user: string;
-      message: string;
-    };
-
-    type respType = {
-      status: number;
-      message: delMsg[];
-    };
-
-    let resp: respType = {
-      status: 200,
-      message: [],
-    };
-
-    for (let user of userList) {
-      const del = await deleteUser(user, req.user as string);
-      resp.message.push({ user: user, message: del as string });
-    }
-
-    return res.status(200).json(resp);
   }
 );
